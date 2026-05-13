@@ -247,7 +247,11 @@ class _BrandPanel extends StatelessWidget {
 }
 
 class _FoundationLogo extends StatelessWidget {
-  const _FoundationLogo();
+  const _FoundationLogo({
+    this.textColor = const Color(0xFF26343A),
+  });
+
+  final Color textColor;
 
   @override
   Widget build(BuildContext context) {
@@ -262,10 +266,10 @@ class _FoundationLogo extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        const Text(
+        Text(
           'Debora\nFoundation\nIndia',
           style: TextStyle(
-            color: Color(0xFF26343A),
+            color: textColor,
             fontSize: 18,
             fontWeight: FontWeight.w700,
             height: 1.08,
@@ -985,35 +989,44 @@ class _MonthAttendanceCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            const Row(
-              children: [
-                Expanded(
-                  child: _AttendanceStatCard(
-                    label: 'Present',
-                    value: '13',
-                    color: Color(0xFF3F8A3C),
-                    background: Color(0xFFEFF8EE),
-                  ),
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: _AttendanceStatCard(
-                    label: 'Absents',
-                    value: '02',
-                    color: Color(0xFFB3261E),
-                    background: Color(0xFFFFECEA),
-                  ),
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: _AttendanceStatCard(
-                    label: 'Late in',
-                    value: '04',
-                    color: Color(0xFFC47A00),
-                    background: Color(0xFFFFF3D9),
-                  ),
-                ),
-              ],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                const gap = 10.0;
+                final cardWidth = (constraints.maxWidth - gap) / 2;
+
+                return Wrap(
+                  spacing: gap,
+                  runSpacing: gap,
+                  children: const [
+                    _AttendanceStatCard(
+                      label: 'Present',
+                      value: '08',
+                      color: Color(0xFF3F8A3C),
+                      background: Color(0xFFEFF8EE),
+                    ),
+                    _AttendanceStatCard(
+                      label: 'Late in',
+                      value: '04',
+                      color: Color(0xFFC47A00),
+                      background: Color(0xFFFFF3D9),
+                    ),
+                    _AttendanceStatCard(
+                      label: 'Leaves',
+                      value: '03',
+                      color: Color(0xFF7A1F35),
+                      background: Color(0xFFF7E9EE),
+                    ),
+                    _AttendanceStatCard(
+                      label: 'Working Days',
+                      value: '11',
+                      color: Color(0xFF2F6F8F),
+                      background: Color(0xFFEAF5FA),
+                    ),
+                  ]
+                      .map((card) => SizedBox(width: cardWidth, child: card))
+                      .toList(),
+                );
+              },
             ),
           ],
         ),
@@ -1694,7 +1707,7 @@ class _ProfileHeader extends StatelessWidget {
               alignment: Alignment.topCenter,
               child: FittedBox(
                 fit: BoxFit.scaleDown,
-                child: _FoundationLogo(),
+                child: _FoundationLogo(textColor: Colors.white),
               ),
             ),
           ),

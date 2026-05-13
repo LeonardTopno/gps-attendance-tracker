@@ -45,6 +45,11 @@ void main() {
     expect(find.text('Apr 15, 2026'), findsOneWidget);
     expect(find.text('Check In'), findsWidgets);
     expect(find.text('Attendance for this Month'), findsOneWidget);
+    expect(find.text('Absents'), findsNothing);
+    expect(find.text('Leaves'), findsOneWidget);
+    expect(find.text('03'), findsOneWidget);
+    expect(find.text('Working Days'), findsOneWidget);
+    expect(find.text('11'), findsOneWidget);
     expect(find.text('Request'), findsNothing);
   });
 
