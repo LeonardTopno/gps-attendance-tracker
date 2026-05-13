@@ -1,6 +1,8 @@
-# GPS Attendance Tracker
+# GEO Attendance App
 
-Starter workspace for a GPS-based attendance tracking system built with:
+Description: Geo Attendance App is a location-based attendance tracking system that ensures teachers and students are physically present in class before they can mark themselves as present.
+
+GPS-based attendance tracking system built with:
 
 - Flutter Android app
 - PHP REST APIs
