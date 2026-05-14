@@ -1,0 +1,71 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter analyze
+
+## exception
+
+_Exception: Exception: analysis server exited with code 255 and output:
+[stderr] Unhandled exception:
+[stderr] PathAccessException: Creation failed, path = 'C:\Users\leoto\AppData\Local\.dartServer' (OS Error: Access is denied, errno = 5)
+[stderr] #0      _Directory.createSync (dart:io/directory_impl.dart:136:7)
+[stderr] #1      _Directory.createSync (dart:io/directory_impl.dart:131:16)
+[stderr] #2      PhysicalResourceProvider.getStateLocation (package:analyzer/file_system/physical_file_system.dart:79:17)
+[stderr] #3      Driver._readUuid (package:analysis_server/src/server/driver.dart:751:10)
+[stderr] #4      Driver.start (package:analysis_server/src/server/driver.dart:332:13)
+[stderr] #5      main (file:///C:/b/s/w/ir/x/w/sdk/pkg/analysis_server/bin/server.dart:10:11)
+[stderr] #6      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:312:33)
+[stderr] #7      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+
+```
+```
+
+## flutter doctor
+
+```
+[!] Flutter (Channel stable, 3.41.9, on Microsoft Windows [Version 10.0.22631.6199], locale en-IN) [469ms]
+    • Flutter version 3.41.9 on channel stable at C:\Users\leoto\develop\flutter
+    ! The flutter binary is not on your path. Consider adding C:\Users\leoto\develop\flutter\bin to your path.
+    ! The dart binary is not on your path. Consider adding C:\Users\leoto\develop\flutter\bin to your path.
+    • Upstream repository https://github.com/flutter/flutter.git
+    • Framework revision 00b0c91f06 (2 weeks ago), 2026-04-29 10:03:19 -0700
+    • Engine revision 42d3d75a56
+    • Dart version 3.11.5
+    • DevTools version 2.54.2
+    • Feature flags: enable-web, enable-linux-desktop, enable-macos-desktop, enable-windows-desktop, enable-android, enable-ios, cli-animations, enable-native-assets, omit-legacy-version-file, enable-lldb-debugging, enable-uiscene-migration
+    • If those were intentional, you can disregard the above warnings; however it is recommended to use "git" directly to perform update checks and upgrades.
+
+[✓] Windows Version (Windows 11 or higher, 23H2, 2009) [7.8s]
+
+[✗] Android toolchain - develop for Android devices [80ms]
+    ✗ Unable to locate Android SDK.
+      Install Android Studio from: https://developer.android.com/studio/index.html
+      On first launch it will assist you in installing the Android SDK components.
+      (or visit https://flutter.dev/to/windows-android-setup for detailed instructions).
+      If the Android SDK has been installed to a custom location, please use
+      `flutter config --android-sdk` to update to that location.
+
+
+[✓] Chrome - develop for the web [38ms]
+    • Chrome at C:\Program Files\Google\Chrome\Application\chrome.exe
+
+[✗] Visual Studio - develop Windows apps [35ms]
+    ✗ Visual Studio not installed; this is necessary to develop Windows apps.
+      Download at https://visualstudio.microsoft.com/downloads/.
+      Please install the "Desktop development with C++" workload, including all of its default components
+
+[✓] Connected device (2 available) [386ms]
+    • Windows (desktop) • windows • windows-x64    • Microsoft Windows [Version 10.0.22631.6199]
+    • Chrome (web)      • chrome  • web-javascript • unknown
+
+[!] Network resources [180ms]
+    ✗ A network error occurred while checking "https://pub.dev/": A request to send or receive data was disallowed because the socket is not connected and (when sending on a datagram socket using a sendto call) no address was supplied
+    ✗ A network error occurred while checking "https://storage.googleapis.com/": A request to send or receive data was disallowed because the socket is not connected and (when sending on a datagram socket using a sendto call) no address was supplied
+    ✗ A network error occurred while checking "https://maven.google.com/": A request to send or receive data was disallowed because the socket is not connected and (when sending on a datagram socket using a sendto call) no address was supplied
+    ✗ A network error occurred while checking "https://cocoapods.org/": A request to send or receive data was disallowed because the socket is not connected and (when sending on a datagram socket using a sendto call) no address was supplied
+    ✗ A network error occurred while checking "https://github.com/": A request to send or receive data was disallowed because the socket is not connected and (when sending on a datagram socket using a sendto call) no address was supplied
+
+! Doctor found issues in 4 categories.
+```
