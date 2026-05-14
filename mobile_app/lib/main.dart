@@ -538,43 +538,8 @@ class _LoginPanel extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-            const _StatusStrip(),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _StatusStrip extends StatelessWidget {
-  const _StatusStrip();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFBF3F5),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFE9D1D8)),
-      ),
-      child: const Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.info_outline, color: Color(0xFF7A1F35), size: 19),
-          SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              'This screen is UI-first for now. The teacher login API will be wired in after the PHP backend is ready.',
-              style: TextStyle(
-                color: Color(0xFF4F5F59),
-                fontSize: 13,
-                height: 1.4,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -999,28 +964,28 @@ class _MonthAttendanceCard extends StatelessWidget {
                   runSpacing: gap,
                   children: const [
                     _AttendanceStatCard(
+                      label: 'Working Days',
+                      value: '11',
+                      color: Color(0xFF2F6F8F),
+                      background: Color(0xFFEAF5FA),
+                    ),
+                    _AttendanceStatCard(
                       label: 'Present',
                       value: '08',
                       color: Color(0xFF3F8A3C),
                       background: Color(0xFFEFF8EE),
                     ),
                     _AttendanceStatCard(
-                      label: 'Late in',
-                      value: '04',
+                      label: 'Leaves',
+                      value: '03',
                       color: Color(0xFFC47A00),
                       background: Color(0xFFFFF3D9),
                     ),
                     _AttendanceStatCard(
-                      label: 'Leaves',
-                      value: '03',
+                      label: 'Late in',
+                      value: '04',
                       color: Color(0xFF7A1F35),
                       background: Color(0xFFF7E9EE),
-                    ),
-                    _AttendanceStatCard(
-                      label: 'Working Days',
-                      value: '11',
-                      color: Color(0xFF2F6F8F),
-                      background: Color(0xFFEAF5FA),
                     ),
                   ]
                       .map((card) => SizedBox(width: cardWidth, child: card))
@@ -1643,6 +1608,626 @@ class _MarkButton extends StatelessWidget {
   }
 }
 
+enum _ReportRange { daily, weekly, monthly }
+
+class ReportsScreen extends StatefulWidget {
+  const ReportsScreen({super.key});
+
+  @override
+  State<ReportsScreen> createState() => _ReportsScreenState();
+}
+
+class _ReportsScreenState extends State<ReportsScreen> {
+  _ReportRange _selectedRange = _ReportRange.daily;
+
+  static const _rangeStats = <_ReportRange, _ReportSnapshot>{
+    _ReportRange.daily: _ReportSnapshot(
+      title: 'Daily',
+      period: 'Apr 15, 2026',
+      presentRate: 91,
+      present: 41,
+      absent: 4,
+      late: 2,
+      coverage: 45,
+      trend: [
+        _TrendPoint('8 AM', 62),
+        _TrendPoint('10 AM', 88),
+        _TrendPoint('12 PM', 91),
+        _TrendPoint('2 PM', 84),
+      ],
+    ),
+    _ReportRange.weekly: _ReportSnapshot(
+      title: 'Weekly',
+      period: 'Apr 13 - Apr 19, 2026',
+      presentRate: 87,
+      present: 214,
+      absent: 22,
+      late: 11,
+      coverage: 247,
+      trend: [
+        _TrendPoint('Mon', 84),
+        _TrendPoint('Tue', 91),
+        _TrendPoint('Wed', 87),
+        _TrendPoint('Thu', 89),
+        _TrendPoint('Fri', 83),
+      ],
+    ),
+    _ReportRange.monthly: _ReportSnapshot(
+      title: 'Monthly',
+      period: 'April 2026',
+      presentRate: 89,
+      present: 892,
+      absent: 74,
+      late: 39,
+      coverage: 1005,
+      trend: [
+        _TrendPoint('W1', 86),
+        _TrendPoint('W2', 90),
+        _TrendPoint('W3', 88),
+        _TrendPoint('W4', 92),
+      ],
+    ),
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final snapshot = _rangeStats[_selectedRange]!;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8F3F4),
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 440),
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(18, 20, 18, 28),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const _ReportsHeader(),
+                        const SizedBox(height: 18),
+                        _ReportRangeSelector(
+                          selectedRange: _selectedRange,
+                          onSelected: (range) {
+                            setState(() => _selectedRange = range);
+                          },
+                        ),
+                        const SizedBox(height: 14),
+                        _ReportOverviewCard(snapshot: snapshot),
+                        const SizedBox(height: 14),
+                        _ReportTrendCard(snapshot: snapshot),
+                        const SizedBox(height: 14),
+                        const _SubjectWiseReportCard(),
+                      ],
+                    ),
+                  ),
+                ),
+                const _AppBottomNav(selected: _NavTab.reports),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ReportsHeader extends StatelessWidget {
+  const _ReportsHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: const Color(0xFF7A1F35),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: const Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Reports',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  'Student attendance analytics',
+                  style: TextStyle(
+                    color: Color(0xFFF0DCE2),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            Icons.query_stats,
+            color: Color(0xFFF1C453),
+            size: 34,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReportRangeSelector extends StatelessWidget {
+  const _ReportRangeSelector({
+    required this.selectedRange,
+    required this.onSelected,
+  });
+
+  final _ReportRange selectedRange;
+  final ValueChanged<_ReportRange> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 48,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEFE3E7),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: _ReportRange.values.map((range) {
+          final selected = selectedRange == range;
+          final label = switch (range) {
+            _ReportRange.daily => 'Daily',
+            _ReportRange.weekly => 'Weekly',
+            _ReportRange.monthly => 'Monthly',
+          };
+
+          return Expanded(
+            child: InkWell(
+              onTap: () => onSelected(range),
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                decoration: BoxDecoration(
+                  color:
+                      selected ? const Color(0xFF7A1F35) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      color: selected ? Colors.white : const Color(0xFF7A1F35),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class _ReportOverviewCard extends StatelessWidget {
+  const _ReportOverviewCard({required this.snapshot});
+
+  final _ReportSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SoftCard(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${snapshot.title} Overview',
+                        style: const TextStyle(
+                          color: Color(0xFF241B1E),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        snapshot.period,
+                        style: const TextStyle(
+                          color: Color(0xFF83777A),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEAF8EA),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '${snapshot.presentRate}%',
+                    style: const TextStyle(
+                      color: Color(0xFF2E7D32),
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: LinearProgressIndicator(
+                value: snapshot.presentRate / 100,
+                minHeight: 10,
+                backgroundColor: const Color(0xFFF3E7EA),
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  Color(0xFF3E8F43),
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                const gap = 10.0;
+                final width = (constraints.maxWidth - gap) / 2;
+
+                return Wrap(
+                  spacing: gap,
+                  runSpacing: gap,
+                  children: [
+                    _ReportMetricTile(
+                      label: 'Present',
+                      value: '${snapshot.present}',
+                      color: const Color(0xFF2E7D32),
+                      background: const Color(0xFFEAF8EA),
+                    ),
+                    _ReportMetricTile(
+                      label: 'Absent',
+                      value: '${snapshot.absent}',
+                      color: const Color(0xFFB3261E),
+                      background: const Color(0xFFFDECEC),
+                    ),
+                    _ReportMetricTile(
+                      label: 'Late Arrivals',
+                      value: '${snapshot.late}',
+                      color: const Color(0xFFB36B00),
+                      background: const Color(0xFFFFF3DB),
+                    ),
+                    _ReportMetricTile(
+                      label: 'Marked Students',
+                      value: '${snapshot.coverage}',
+                      color: const Color(0xFF2F6F8F),
+                      background: const Color(0xFFEAF5FA),
+                    ),
+                  ].map((tile) => SizedBox(width: width, child: tile)).toList(),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ReportMetricTile extends StatelessWidget {
+  const _ReportMetricTile({
+    required this.label,
+    required this.value,
+    required this.color,
+    required this.background,
+  });
+
+  final String label;
+  final String value;
+  final Color color;
+  final Color background;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 88,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Color(0xFF554A4D),
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const Spacer(),
+          Text(
+            value,
+            style: TextStyle(
+              color: color,
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReportTrendCard extends StatelessWidget {
+  const _ReportTrendCard({required this.snapshot});
+
+  final _ReportSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SoftCard(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              'Attendance Trend',
+              style: TextStyle(
+                color: Color(0xFF241B1E),
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 14),
+            SizedBox(
+              height: 154,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: snapshot.trend.map((point) {
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            '${point.value}%',
+                            style: const TextStyle(
+                              color: Color(0xFF7A1F35),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.bottomCenter,
+                              child: FractionallySizedBox(
+                                heightFactor: point.value / 100,
+                                widthFactor: 0.78,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF7A1F35),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            point.label,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Color(0xFF6D6064),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SubjectWiseReportCard extends StatelessWidget {
+  const _SubjectWiseReportCard();
+
+  static const _subjects = [
+    _SubjectAnalytics('Computer Basics', 94, 32, 2),
+    _SubjectAnalytics('Tailoring Class', 88, 29, 4),
+    _SubjectAnalytics('Digital Literacy', 91, 24, 2),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return _SoftCard(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Subject Wise',
+                    style: TextStyle(
+                      color: Color(0xFF241B1E),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                Icon(Icons.menu_book_outlined, color: Color(0xFF7A1F35)),
+              ],
+            ),
+            const SizedBox(height: 14),
+            ..._subjects.map(
+              (subject) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _SubjectAnalyticsRow(subject: subject),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SubjectAnalyticsRow extends StatelessWidget {
+  const _SubjectAnalyticsRow({required this.subject});
+
+  final _SubjectAnalytics subject;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFCF8F9),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFEAD9DE)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  subject.name,
+                  style: const TextStyle(
+                    color: Color(0xFF241B1E),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              Text(
+                '${subject.rate}%',
+                style: const TextStyle(
+                  color: Color(0xFF2E7D32),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: subject.rate / 100,
+              minHeight: 8,
+              backgroundColor: const Color(0xFFF1E5E8),
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                Color(0xFF2F6F8F),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '${subject.present} present',
+                  style: const TextStyle(
+                    color: Color(0xFF5F5457),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Text(
+                '${subject.absent} absent',
+                style: const TextStyle(
+                  color: Color(0xFFB3261E),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReportSnapshot {
+  const _ReportSnapshot({
+    required this.title,
+    required this.period,
+    required this.presentRate,
+    required this.present,
+    required this.absent,
+    required this.late,
+    required this.coverage,
+    required this.trend,
+  });
+
+  final String title;
+  final String period;
+  final int presentRate;
+  final int present;
+  final int absent;
+  final int late;
+  final int coverage;
+  final List<_TrendPoint> trend;
+}
+
+class _TrendPoint {
+  const _TrendPoint(this.label, this.value);
+
+  final String label;
+  final int value;
+}
+
+class _SubjectAnalytics {
+  const _SubjectAnalytics(this.name, this.rate, this.present, this.absent);
+
+  final String name;
+  final int rate;
+  final int present;
+  final int absent;
+}
+
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
@@ -1820,6 +2405,8 @@ class _ProfileDetailsCard extends StatelessWidget {
         child: Column(
           children: [
             _DetailRow(label: 'Employee Id', value: 'DFI326'),
+            _DividerLine(),
+            _DetailRow(label: 'Designation', value: 'Computer Trainer'),
             _DividerLine(),
             _DetailRow(label: 'Mobile No.', value: '+91 88676 71697'),
             _DividerLine(),
@@ -2069,6 +2656,15 @@ class _AppBottomNav extends StatelessWidget {
             icon: Icons.description_outlined,
             label: 'Reports',
             selected: selected == _NavTab.reports,
+            onTap: selected == _NavTab.reports
+                ? null
+                : () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const ReportsScreen(),
+                      ),
+                    );
+                  },
           ),
           _BottomNavItem(
             icon: Icons.account_circle,

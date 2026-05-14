@@ -192,6 +192,8 @@ void main() {
     expect(find.text('Rushil Koresh'), findsOneWidget);
     expect(find.text('Employee Id'), findsOneWidget);
     expect(find.text('DFI326'), findsOneWidget);
+    expect(find.text('Designation'), findsOneWidget);
+    expect(find.text('Computer Trainer'), findsOneWidget);
     expect(find.text('Mobile No.'), findsOneWidget);
     expect(find.text('+91 88676 71697'), findsOneWidget);
     expect(
@@ -205,6 +207,37 @@ void main() {
     expect(find.text('Notification'), findsOneWidget);
     expect(find.text('Apply Leave'), findsOneWidget);
     expect(find.text('Profile'), findsOneWidget);
+  });
+
+  testWidgets('opens reports page and switches analytics range',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const GpsAttendanceApp());
+
+    await tester.enterText(
+        find.byType(EditableText).first, 'teacher@example.com');
+    await tester.enterText(find.byType(EditableText).last, 'password');
+    await tester.tap(find.text('Sign in'));
+    await tester.pumpAndSettle(const Duration(seconds: 1));
+
+    await tester.tap(find.text('Reports'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Student attendance analytics'), findsOneWidget);
+    expect(find.text('Daily Overview'), findsOneWidget);
+    expect(find.text('Subject Wise'), findsOneWidget);
+    expect(find.text('Computer Basics'), findsOneWidget);
+
+    await tester.tap(find.text('Weekly'));
+    await tester.pump();
+
+    expect(find.text('Weekly Overview'), findsOneWidget);
+    expect(find.text('Apr 13 - Apr 19, 2026'), findsOneWidget);
+
+    await tester.tap(find.text('Monthly'));
+    await tester.pump();
+
+    expect(find.text('Monthly Overview'), findsOneWidget);
+    expect(find.text('April 2026'), findsOneWidget);
   });
 
   testWidgets('logs out from profile page', (WidgetTester tester) async {
